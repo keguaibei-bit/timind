@@ -1,0 +1,283 @@
+[data-theme="day"] {
+    --bg-app: #f7f8fc;
+    --bg-sidebar: #ffffff;
+    --bg-topbar: rgba(255, 255, 255, 0.85);
+    --bg-tabbar: rgba(255, 255, 255, 0.9);
+    --bg-card: #ffffff;
+    --bg-primary: #667eea;
+    --bg-hover: #f0f2f8;
+    --text-primary: #1a1d2e;
+    --text-secondary: #6b7280;
+    --text-on-primary: #ffffff;
+    --border-color: #e5e7eb;
+    --color-accent: #764ba2;
+}
+
+[data-theme="night"] {
+    --bg-app: linear-gradient(135deg, #0a0c1a 0%, #0f1a2e 50%, #0a0f1a 100%);
+    --bg-sidebar: rgba(15, 20, 40, 0.9);
+    --bg-topbar: rgba(10, 12, 26, 0.8);
+    --bg-tabbar: rgba(10, 12, 26, 0.9);
+    --bg-card: rgba(255, 255, 255, 0.06);
+    --bg-primary: #667eea;
+    --bg-hover: rgba(255, 255, 255, 0.08);
+    --text-primary: #f0f2ff;
+    --text-secondary: #8b92b0;
+    --text-on-primary: #ffffff;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --color-accent: #4facfe;
+}
+
+[data-theme="eye"] {
+    --bg-app: #c7edcc;
+    --bg-sidebar: #d4f4d9;
+    --bg-topbar: rgba(212, 244, 217, 0.9);
+    --bg-tabbar: rgba(212, 244, 217, 0.95);
+    --bg-card: #e8f8eb;
+    --bg-primary: #2d8659;
+    --bg-hover: #b8e0be;
+    --text-primary: #1a3c2a;
+    --text-secondary: #3d6b4f;
+    --text-on-primary: #ffffff;
+    --border-color: #a8d5b0;
+    --color-accent: #38a169;
+}
+
+[data-theme="day"] body {
+    background: var(--bg-app);
+}
+
+[data-theme="night"] body {
+    background: var(--bg-app);
+    background-attachment: fixed;
+}
+
+[data-theme="eye"] body {
+    background: var(--bg-app);
+}
+
+[data-theme="night"] .sidebar {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+[data-theme="night"] .top-bar {
+    background: var(--bg-topbar);
+}
+
+[data-theme="night"] .tab-bar {
+    background: var(--bg-tabbar);
+}
+
+[data-theme="night"] .card,
+[data-theme="night"] .welcome-card,
+[data-theme="night"] .stat-card:not(.highlight),
+[data-theme="night"] .chart-placeholder,
+[data-theme="night"] .planet-display,
+[data-theme="night"] .planet-progress,
+[data-theme="night"] .planet-missions,
+[data-theme="night"] .settings-group,
+[data-theme="night"] .report-chart-card,
+[data-theme="night"] .report-review-card,
+[data-theme="night"] .timer-ring {
+    background: var(--bg-card);
+    backdrop-filter: saturate(180%) blur(16px);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+}
+
+[data-theme="day"] .timer-ring {
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+}
+
+[data-theme="night"] .timer-ring {
+    box-shadow:
+        0 0 40px rgba(102, 126, 234, 0.3),
+        inset 0 0 20px rgba(102, 126, 234, 0.1);
+}
+
+[data-theme="eye"] .timer-ring {
+    box-shadow: 0 8px 32px rgba(45, 134, 89, 0.2);
+}
+
+[data-theme="night"] .card::before,
+[data-theme="night"] .welcome-card::before,
+[data-theme="night"] .chart-placeholder::before,
+[data-theme="night"] .planet-display::before,
+[data-theme="night"] .planet-progress::before,
+[data-theme="night"] .settings-group::before,
+[data-theme="night"] .report-chart-card::before,
+[data-theme="night"] .report-review-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    pointer-events: none;
+}
+
+[data-theme="night"] .card,
+[data-theme="night"] .welcome-card,
+[data-theme="night"] .stat-card:not(.highlight),
+[data-theme="night"] .chart-placeholder,
+[data-theme="night"] .planet-display,
+[data-theme="night"] .planet-progress,
+[data-theme="night"] .planet-missions,
+[data-theme="night"] .settings-group,
+[data-theme="night"] .report-chart-card,
+[data-theme="night"] .report-review-card {
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="day"] .primary-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="night"] .primary-btn {
+    background: linear-gradient(135deg, #667eea 0%, #4facfe 100%);
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+}
+
+[data-theme="eye"] .primary-btn {
+    background: linear-gradient(135deg, #2d8659 0%, #38a169 100%);
+}
+
+[data-theme="day"] .nav-item.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="night"] .nav-item.active {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(79, 172, 254, 0.3) 100%);
+    color: #a8b4ff;
+}
+
+[data-theme="eye"] .nav-item.active {
+    background: linear-gradient(135deg, #2d8659 0%, #38a169 100%);
+}
+
+[data-theme="night"] .progress-fill {
+    background: linear-gradient(90deg, #667eea, #4facfe);
+}
+
+[data-theme="day"] .progress-fill {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+[data-theme="eye"] .progress-fill {
+    background: linear-gradient(90deg, #2d8659, #38a169);
+}
+
+[data-theme="night"] .tab-item.active {
+    color: #8b9dff;
+}
+
+[data-theme="day"] .tab-item.active {
+    color: #667eea;
+}
+
+[data-theme="eye"] .tab-item.active {
+    color: #2d8659;
+}
+
+[data-theme="night"] .chart-bar-demo span {
+    background: linear-gradient(180deg, #667eea, #4facfe);
+}
+
+[data-theme="day"] .chart-bar-demo span {
+    background: linear-gradient(180deg, #667eea, #764ba2);
+}
+
+[data-theme="eye"] .chart-bar-demo span {
+    background: linear-gradient(180deg, #2d8659, #38a169);
+}
+
+[data-theme="day"] .stat-card.highlight {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="night"] .stat-card.highlight {
+    background: linear-gradient(135deg, #667eea 0%, #4facfe 100%);
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+}
+
+[data-theme="eye"] .stat-card.highlight {
+    background: linear-gradient(135deg, #2d8659 0%, #38a169 100%);
+}
+
+[data-theme="day"] .option-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="night"] .option-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #4facfe 100%);
+}
+
+[data-theme="eye"] .option-btn.active {
+    background: linear-gradient(135deg, #2d8659 0%, #38a169 100%);
+}
+
+[data-theme="day"] .setting-toggle.on {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="night"] .setting-toggle.on {
+    background: linear-gradient(135deg, #667eea 0%, #4facfe 100%);
+}
+
+[data-theme="eye"] .setting-toggle.on {
+    background: linear-gradient(135deg, #2d8659 0%, #38a169 100%);
+}
+
+[data-theme="day"] .preset-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="night"] .preset-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #4facfe 100%);
+}
+
+[data-theme="eye"] .preset-btn.active {
+    background: linear-gradient(135deg, #2d8659 0%, #38a169 100%);
+}
+
+[data-theme="night"] .theme-btn.active {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(79, 172, 254, 0.4) 100%);
+    border-color: rgba(102, 126, 234, 0.5);
+}
+
+html {
+    transition: background-color 0.3s ease;
+}
+
+* {
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+}
+
+.view,
+.view * {
+    transition-property: opacity, transform, visibility;
+    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card,
+.welcome-card,
+.stat-card,
+.chart-placeholder,
+.planet-display,
+.planet-progress,
+.planet-missions,
+.settings-group,
+.report-chart-card,
+.report-review-card {
+    transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button,
+a {
+    transition: all 0.2s ease;
+}
