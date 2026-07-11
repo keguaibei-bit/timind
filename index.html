@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="night">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0c1a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Timind" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="./manifest.json" />
+    <title>Tmind · 专注心流</title>
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/themes.css" />
+    <!-- Chart.js 仅在报告页用到，defer 异步加载不阻塞首屏 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script>
+        // 白屏诊断：捕获任何 JS 错误并显示出来，方便排查
+        window.__bootErrors = [];
+        window.addEventListener('error', function (e) {
+            window.__bootErrors.push({
+                msg: e.message,
+                src: e.filename,
+                line: e.lineno,
+                col: e.colno
+            });
+            var box = document.getElementById('__bootDebug');
+            if (box) {
+                box.style.display = 'block';
+                box.innerHTML += '<div>[' + (e.filename || '').split('/').pop() + ':' + e.lineno + '] ' + e.message + '</div>';
+            }
+        });
+        window.addEventListener('unhandledrejection', function (e) {
+            var reason = e.reason && (e.reason.message || e.reason) || 'Unknown rejection';
+            window.__bootErrors.push({ msg: 'Promise: ' + reason });
+            var box = document.getElementById('__bootDebug');
+            if (box) {
+                box.style.display = 'block';
+                box.innerHTML += '<div>[Promise] ' + reason + '</div>';
+            }
+        });
+    </script>
+    <style>
+        #__bootDebug {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-height: 50vh;
+            overflow-y: auto;
+            background: #2a0a0a;
+            color: #ff6b6b;
+            padding: 12px;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            z-index: 99999;
+            border-top: 2px solid #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="logo-icon">✨</span>
+                    <span class="logo-text">Tmind</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#/home" class="nav-item active" data-route="home">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">首页</span>
+                </a>
+                <a href="#/focus" class="nav-item" data-route="focus">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-label">专注</span>
+                </a>
+                <a href="#/reports" class="nav-item" data-route="reports">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">报告</span>
+                </a>
+                <a href="#/planet" class="nav-item" data-route="planet">
+                    <span class="nav-icon">🌍</span>
+                    <span class="nav-label">星球</span>
+                </a>
+                <a href="#/settings" class="nav-item" data-route="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">设置</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="theme-switcher">
+                    <button class="theme-btn" data-theme="day" title="日间模式">☀️</button>
+                    <button class="theme-btn active" data-theme="night" title="夜间模式">🌙</button>
+                    <button class="theme-btn" data-theme="eye" title="护眼模式">🌿</button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle" aria-label="菜单">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1 class="top-bar-title" id="topBarTitle">首页</h1>
+                <div class="top-bar-actions">
+                    <span class="user-avatar" id="userAvatar">👤</span>
+                </div>
+            </header>
+
+            <div class="view-container" id="viewContainer">
+
+                <section class="view view-home active" id="view-home" data-route="home">
+                    <div class="view-content">
+                        <div class="welcome-card">
+                            <h2>欢迎回来</h2>
+                            <p>今天也要保持专注哦 ✨</p>
+                        </div>
+                        <div class="card-grid">
+                            <div class="card">
+                                <div class="card-icon">⏱️</div>
+                                <div class="card-title">今日专注</div>
+                                <div class="card-value">0 分钟</div>
+                            </div>
+                            <div class="card">
+                                <div class="card-icon">🔥</div>
+                                <div class="card-title">连续天数</div>
+                                <div class="card-value">0 天</div>
+                            </div>
+                            <div class="card">
+                                <div class="card-icon">🎯</div>
+                                <div class="card-title">专注次数</div>
+                                <div class="card-value">0 次</div>
+                            </div>
+                            <div class="card">
+                                <div class="card-icon">🪙</div>
+                                <div class="card-title">累计金币</div>
+                                <div class="card-value">0</div>
+                            </div>
+                        </div>
+                        <div class="quick-action">
+                            <button class="primary-btn">开始专注</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="view view-focus" id="view-focus" data-route="focus">
+                    <div class="view-content">
+                        <!-- 上方黄金区域：Idle 时显示模式选择栏 + 准备开始指示；
+                             Running 时两者 display:none，同一位置渲染励志语录横幅 -->
+                        <div class="focus-top-region" id="focusTopRegion">
+                            <div class="focus-mode-tabs" id="focusModeTabs">
+                                <button class="mode-tab active" data-mode="countdown">⏱ 倒计时</button>
+                                <button class="mode-tab" data-mode="countup">⏰ 正计时</button>
+                                <button class="mode-tab" data-mode="pomodoro">🍅 番茄钟</button>
+                            </div>
+                            <div class="focus-phase-indicator" id="focusPhaseIndicator">
+                                <span class="phase-label" id="phaseLabel">准备开始</span>
+                            </div>
+                            <div class="focus-quote-banner hidden" id="focusQuoteBanner">每一次专注都是一次自我升级 🚀</div>
+                        </div>
+
+                        <!-- 中间计时圆盘 -->
+                        <div class="focus-timer-area">
+                            <div class="timer-ring" id="timerRing">
+                                <svg class="timer-progress-svg" viewBox="0 0 200 200">
+                                    <circle class="progress-bg" cx="100" cy="100" r="90" fill="none" stroke-width="8" />
+                                    <circle class="progress-fill" id="timerProgressFill" cx="100" cy="100" r="90" fill="none" stroke-width="8"
+                                        stroke-dasharray="565.48" stroke-dashoffset="0" transform="rotate(-90 100 100)" />
+                                </svg>
+                                <div class="timer-display" id="timerDisplay">25:00</div>
+                            </div>
+                        </div>
+
+                        <!-- 下方控制区域 -->
+                        <div class="focus-bottom-region" id="focusBottomRegion">
+                            <div class="focus-presets" id="focusPresets">
+                                <button class="preset-btn active" data-duration="1500000">25 分钟</button>
+                                <button class="preset-btn" data-duration="2700000">45 分钟</button>
+                                <button class="preset-btn" data-duration="3600000">60 分钟</button>
+                                <button class="preset-btn" data-duration="5400000">90 分钟</button>
+                            </div>
+                            <div class="pomodoro-progress hidden" id="pomodoroProgress">
+                                <div class="pomodoro-dots" id="pomodoroDots">
+                                    <span class="pomodoro-dot"></span>
+                                    <span class="pomodoro-dot"></span>
+                                    <span class="pomodoro-dot"></span>
+                                    <span class="pomodoro-dot"></span>
+                                </div>
+                                <div class="pomodoro-session-info" id="pomodoroSessionInfo">第 1 轮 · 共 4 轮</div>
+                            </div>
+                            <div class="focus-actions" id="focusActions">
+                                <button class="primary-btn big" id="btnStartFocus">开始专注</button>
+                            </div>
+                            <!-- 白噪音控制组件：仅 Running 态淡入显示，位于退出提示上方 -->
+                            <div class="ambient-sound-bar hidden" id="ambientSoundBar" role="button" tabindex="0" aria-label="切换白噪音">
+                                <span class="ambient-icon" id="ambientIcon">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                                    </svg>
+                                </span>
+                                <span class="ambient-label" id="ambientLabel">静音</span>
+                            </div>
+                            <div class="focus-immersion-hint hidden" id="focusImmersionHint">点击暂停可退出沉浸</div>
+                            <div class="focus-actions focus-running hidden" id="focusRunningActions">
+                                <button class="ctrl-btn secondary" id="btnPauseFocus">暂停</button>
+                                <button class="ctrl-btn danger" id="btnAbandonFocus">放弃</button>
+                            </div>
+                            <div class="focus-fastforward hidden" id="focusFastForward">
+                                <button class="fastforward-btn" id="btnFastForward">⏩ 测试：快进至最后 3 秒</button>
+                            </div>
+                            <div class="focus-actions focus-paused hidden" id="focusPausedActions">
+                                <button class="primary-btn big" id="btnResumeFocus">继续</button>
+                                <button class="ctrl-btn danger" id="btnEndFocus">结束</button>
+                            </div>
+                            <div class="focus-actions focus-break hidden" id="focusBreakActions">
+                                <button class="primary-btn" id="btnSkipBreak">跳过休息</button>
+                                <button class="ctrl-btn secondary" id="btnStartBreak">开始休息</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="view view-reports" id="view-reports" data-route="reports">
+                    <div class="view-content">
+                        <h2 class="view-title">数据复盘</h2>
+                        <div class="stats-overview">
+                            <div class="stat-card">
+                                <div class="stat-icon">⏱️</div>
+                                <div class="stat-num" id="reportWeekMinutes">0</div>
+                                <div class="stat-label">本周专注(分钟)</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🎯</div>
+                                <div class="stat-num" id="reportWeekSessions">0</div>
+                                <div class="stat-label">本周次数</div>
+                            </div>
+                            <div class="stat-card highlight">
+                                <div class="stat-icon">📅</div>
+                                <div class="stat-num" id="reportAvgMinutes">0</div>
+                                <div class="stat-label">日均(分钟)</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">⚡</div>
+                                <div class="stat-num" id="reportEfficiency">0%</div>
+                                <div class="stat-label">专注效率</div>
+                            </div>
+                        </div>
+
+                        <div class="report-chart-card">
+                            <div class="chart-title">本周专注时长</div>
+                            <div class="chart-canvas-wrap">
+                                <canvas id="weeklyChartCanvas"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="report-chart-card">
+                            <div class="chart-title">专注分类分布</div>
+                            <div class="chart-canvas-wrap chart-canvas-wrap-doughnut">
+                                <canvas id="categoryChartCanvas"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="report-review-card">
+                            <div class="review-header">
+                                <span class="review-icon">✨</span>
+                                <span class="review-title">AI 智能复盘</span>
+                            </div>
+                            <div class="review-content" id="reportReviewContent">
+                                正在生成你的专属复盘...
+                            </div>
+                        </div>
+
+                        <div class="report-actions">
+                            <button class="primary-btn" id="btnRefreshReports">刷新复盘</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="view view-planet" id="view-planet" data-route="planet">
+                    <div class="view-content">
+                        <h2 class="view-title">我的星球</h2>
+                        <div class="planet-display">
+                            <div class="planet-visual">🪐</div>
+                            <div class="planet-info">
+                                <div class="planet-name">初心星</div>
+                                <div class="planet-level">Lv.1</div>
+                            </div>
+                        </div>
+                        <div class="planet-progress">
+                            <div class="progress-label">星球成长进度</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 15%"></div>
+                            </div>
+                            <div class="progress-text">150 / 1000 EXP</div>
+                        </div>
+                        <div class="planet-missions">
+                            <div class="mission-item">
+                                <span>🌱 完成 3 次专注</span>
+                                <span class="mission-status">0/3</span>
+                            </div>
+                            <div class="mission-item">
+                                <span>⏰ 累计 60 分钟</span>
+                                <span class="mission-status">0/60</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="view view-settings" id="view-settings" data-route="settings">
+                    <div class="view-content">
+                        <h2 class="view-title">设置</h2>
+
+                        <div class="demo-inject-card">
+                            <div class="demo-inject-header">
+                                <span class="demo-inject-icon">🎁</span>
+                                <div class="demo-inject-text">
+                                    <div class="demo-inject-title">评委专享 · 一键注入备考体验数据</div>
+                                    <div class="demo-inject-desc">注入过去 7 天模拟专注数据，等级直升 Lv.3，点亮多枚徽章</div>
+                                </div>
+                            </div>
+                            <div class="demo-inject-actions">
+                                <button class="primary-btn big" id="btnInjectDemoData">一键注入体验数据</button>
+                                <button class="ctrl-btn secondary" id="btnClearDemoData">清空演示数据</button>
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <div class="setting-row">
+                                <span class="setting-label">主题模式</span>
+                                <div class="setting-options">
+                                    <button class="option-btn" data-theme="day">☀️ 日间</button>
+                                    <button class="option-btn active" data-theme="night">🌙 夜间</button>
+                                    <button class="option-btn" data-theme="eye">🌿 护眼</button>
+                                </div>
+                            </div>
+                            <div class="setting-row">
+                                <span class="setting-label">默认专注时长</span>
+                                <span class="setting-value">25 分钟</span>
+                            </div>
+                            <div class="setting-row">
+                                <span class="setting-label">休息时长</span>
+                                <span class="setting-value">5 分钟</span>
+                            </div>
+                            <div class="setting-row">
+                                <span class="setting-label">音效</span>
+                                <span class="setting-toggle on">ON</span>
+                            </div>
+                            <div class="setting-row">
+                                <span class="setting-label">震动反馈</span>
+                                <span class="setting-toggle on">ON</span>
+                            </div>
+                        </div>
+
+                        <div class="ai-config-panel" id="aiConfigPanel">
+                            <button class="ai-config-header" id="aiConfigToggle" type="button" aria-expanded="false">
+                                <span class="ai-config-icon">🤖</span>
+                                <span class="ai-config-title">高级功能：云端 AI 导师直连（可选）</span>
+                                <span class="ai-config-arrow" id="aiConfigArrow">▾</span>
+                            </button>
+                            <div class="ai-config-body hidden" id="aiConfigBody">
+                                <div class="ai-config-row">
+                                    <label class="ai-config-label" for="aiProviderSelect">选择模型</label>
+                                    <select class="ai-config-input ai-config-select" id="aiProviderSelect">
+                                        <option value="deepseek">DeepSeek-Chat（深度求索）</option>
+                                        <option value="zhipu">智谱清言 GLM-4</option>
+                                    </select>
+                                </div>
+                                <div class="ai-config-row">
+                                    <label class="ai-config-label" for="aiKeyInput">API Key</label>
+                                    <input class="ai-config-input ai-config-key" type="password" id="aiKeyInput" placeholder="sk-...（仅本地存储，不会上传）" autocomplete="off" />
+                                </div>
+                                <div class="ai-config-actions">
+                                    <button class="primary-btn" id="btnSaveAIConfig" type="button">保存配置</button>
+                                    <button class="ctrl-btn secondary" id="btnClearAIConfig" type="button">清除配置</button>
+                                </div>
+                                <div class="ai-config-tip" id="aiConfigTip"></div>
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <div class="setting-row">
+                                <span class="setting-label">关于 Tmind</span>
+                                <span class="setting-value">v1.0.0</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="view view-profile" id="view-profile" data-route="profile">
+                    <div class="view-content">
+                        <div class="profile-header">
+                            <div class="profile-avatar">👤</div>
+                            <div class="profile-info">
+                                <div class="profile-name">专注达人</div>
+                                <div class="profile-level">Lv.1 · 初心星</div>
+                            </div>
+                        </div>
+
+                        <div class="profile-stats">
+                            <div class="profile-stat">
+                                <div class="profile-stat-num" id="profileTotalMinutes">0</div>
+                                <div class="profile-stat-label">总专注分钟</div>
+                            </div>
+                            <div class="profile-stat">
+                                <div class="profile-stat-num" id="profileTotalSessions">0</div>
+                                <div class="profile-stat-label">专注次数</div>
+                            </div>
+                            <div class="profile-stat highlight">
+                                <div class="profile-stat-num" id="profileStreak">0</div>
+                                <div class="profile-stat-label">连续天数</div>
+                            </div>
+                        </div>
+
+                        <div class="profile-progress-card">
+                            <div class="progress-label">
+                                <span>当前等级</span>
+                                <span id="profileExpText">0 / 100 EXP</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="profileExpBar" style="width: 0%"></div>
+                            </div>
+                            <div class="profile-level-info">
+                                <span>Lv.<span id="profileCurrentLevel">1</span></span>
+                                <span>Lv.<span id="profileNextLevel">2</span></span>
+                            </div>
+                        </div>
+
+                        <div class="profile-menu">
+                            <div class="profile-menu-item">
+                                <span class="menu-icon">💎</span>
+                                <span class="menu-label">我的金币</span>
+                                <span class="menu-value" id="profileCoins">0</span>
+                            </div>
+                            <div class="profile-menu-item">
+                                <span class="menu-icon">🏆</span>
+                                <span class="menu-label">成就勋章</span>
+                                <span class="menu-arrow">›</span>
+                            </div>
+                            <div class="profile-menu-item">
+                                <span class="menu-icon">📊</span>
+                                <span class="menu-label">数据统计</span>
+                                <span class="menu-arrow">›</span>
+                            </div>
+                            <div class="profile-menu-item">
+                                <span class="menu-icon">📤</span>
+                                <span class="menu-label">导出数据</span>
+                                <span class="menu-arrow">›</span>
+                            </div>
+                            <div class="profile-menu-item">
+                                <span class="menu-icon">📥</span>
+                                <span class="menu-label">导入数据</span>
+                                <span class="menu-arrow">›</span>
+                            </div>
+                        </div>
+
+                        <input type="file" id="importFileInput" accept=".json" style="display: none" />
+
+                        <div class="badge-wall-section">
+                            <div class="badge-wall-header">
+                                <h3 class="badge-wall-title">🏅 成就徽章</h3>
+                                <span class="badge-wall-count" id="badgeWallCount">0 / 9</span>
+                            </div>
+                            <div class="badge-wall-grid" id="badgeWallGrid">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <nav class="tab-bar" id="tabBar">
+            <a href="#/home" class="tab-item active" data-route="home">
+                <span class="tab-icon">🏠</span>
+                <span class="tab-label">首页</span>
+            </a>
+            <a href="#/focus" class="tab-item" data-route="focus">
+                <span class="tab-icon">🎯</span>
+                <span class="tab-label">专注</span>
+            </a>
+            <a href="#/reports" class="tab-item" data-route="reports">
+                <span class="tab-icon">📊</span>
+                <span class="tab-label">报告</span>
+            </a>
+            <a href="#/planet" class="tab-item" data-route="planet">
+                <span class="tab-icon">🌍</span>
+                <span class="tab-label">星球</span>
+            </a>
+            <a href="#/settings" class="tab-item" data-route="settings">
+                <span class="tab-icon">⚙️</span>
+                <span class="tab-label">设置</span>
+            </a>
+        </nav>
+
+    </div>
+
+    <div class="complete-modal hidden" id="completeModal">
+        <div class="complete-modal-overlay"></div>
+        <div class="complete-modal-content">
+            <div class="complete-celebrate">
+                <div class="complete-emoji">🎉</div>
+                <div class="complete-title">专注完成！</div>
+                <div class="complete-sub">你让这段时间更有价值</div>
+            </div>
+            <div class="complete-stats">
+                <div class="cs-cell">
+                    <div class="cs-num" id="completeMinutes">0</div>
+                    <div class="cs-cap">专注分钟</div>
+                </div>
+                <div class="cs-divider"></div>
+                <div class="cs-cell">
+                    <div class="cs-num" id="completeExp">+0</div>
+                    <div class="cs-cap">经验</div>
+                </div>
+                <div class="cs-divider"></div>
+                <div class="cs-cell">
+                    <div class="cs-num" id="completeCoins">+0</div>
+                    <div class="cs-cap">金币</div>
+                </div>
+            </div>
+            <div class="complete-actions">
+                <button class="primary-btn big" id="btnCompleteClose">太棒了</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="levelup-modal hidden" id="levelupModal">
+        <div class="levelup-overlay"></div>
+        <div class="levelup-content">
+            <div class="levelup-icon-big" id="levelupIconBig">⭐</div>
+            <div class="levelup-label">LEVEL UP</div>
+            <div class="levelup-level" id="levelupLevelText">Lv.2</div>
+            <div class="levelup-title" id="levelupTitleText">专注学徒</div>
+            <div class="levelup-sub">恭喜升级！继续加油</div>
+            <div class="levelup-badge-area hidden" id="levelupBadgeArea">
+                <div class="levelup-badge-divider"></div>
+                <div class="levelup-badge-label">新徽章解锁</div>
+                <div class="levelup-badge-list" id="levelupBadgeList"></div>
+            </div>
+            <div class="levelup-actions">
+                <button class="primary-btn big" id="btnLevelupClose">继续前进</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 白屏诊断信息框（仅在 JS 报错时显示） -->
+    <div id="__bootDebug"></div>
+
+    <script src="js/state.js" defer></script>
+    <script src="js/storage.js" defer></script>
+    <script src="js/timer/TimerEngine.js" defer></script>
+    <script src="js/timer/CountdownMode.js" defer></script>
+    <script src="js/timer/CountUpMode.js" defer></script>
+    <script src="js/timer/PomodoroMode.js" defer></script>
+    <script src="js/gamification/LevelSystem.js" defer></script>
+    <script src="js/gamification/BadgeSystem.js" defer></script>
+    <script src="js/gamification/RewardEngine.js" defer></script>
+    <script src="js/gamification/Confetti.js" defer></script>
+    <script src="js/reports/WeeklyChart.js" defer></script>
+    <script src="js/reports/CategoryChart.js" defer></script>
+    <script src="js/reports/ReportGenerator.js" defer></script>
+    <script src="js/utils/Notification.js" defer></script>
+    <script src="js/utils/AudioUtils.js" defer></script>
+    <script src="js/utils/AudioManager.js" defer></script>
+    <script src="js/utils/DemoDataInjector.js" defer></script>
+    <script src="js/utils/DemoHelper.js" defer></script>
+    <script src="js/utils/Effects.js" defer></script>
+    <script src="js/router.js" defer></script>
+    <script src="js/app.js" defer></script>
+
+</body>
+</html>
